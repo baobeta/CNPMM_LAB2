@@ -1,6 +1,7 @@
 let { blogs } = require('../models/index');
 
 const comments = new Map();
+comments.set('1', [{ name: 'bao', comment: 'Thêm comment ở dưới nè' }]);
 function generateUUID() { // Public Domain/MIT
   let d = new Date().getTime();// Timestamp
   let d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now() * 1000)) || 0;// Time in microseconds since page-load or 0 if unsupported
@@ -25,7 +26,7 @@ const addBlog = (req, res, next) => {
   const { body } = req;
   blogs.push({ id: generateUUID(), ...body });
   comments.set(generateUUID().toString(), []);
-  res.render('index', { blogs });
+  res.redirect('/');
 };
 
 const getBlog = (req, res, next) => {
@@ -45,13 +46,14 @@ const getBlogUpdate = (req, res, next) => {
 const addComment = (req, res, next) => {
   const { id } = req.params;
   const { body } = req;
+  if (!body.name && !body.comment) res.redirect(`/blog/${id}`);
   if (!comments.has(id.toString())) comments.set(id.toString(), []);
   const oldComment = comments.get(id.toString());
   oldComment.push({ ...body });
   comments.set(id.toString(), oldComment);
   const blog = blogs.find((b) => b.id.toString() === id.toString());
   const comment = comments.get(id.toString());
-  res.render('blog', { blog, comment });
+  res.redirect(`/blog/${id}`);
 };
 
 const updateBlog = (req, res) => {
@@ -59,13 +61,13 @@ const updateBlog = (req, res) => {
   const { body } = req;
   const newBlog = { id, ...body };
   blogs = blogs.map((b) => (b.id.toString() === id.toString() ? newBlog : b));
-  res.render('index', { blogs });
+  res.redirect(`/blog/${id}`);
 };
 
 const removeBlog = (req, res, next) => {
   const { id } = req.params;
   blogs = blogs.filter((b) => (b.id.toString() !== id.toString()));
-  res.render('index', { blogs });
+  res.redirect('/');
 };
 
 module.exports = {
