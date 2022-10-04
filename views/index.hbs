@@ -1,0 +1,14 @@
+<h1>Trang chủ</h1>
+{{#each blogs}}
+<a href="/blog/{{{this.id}}}">{{this.content}}</a>
+<span><a href="/update/{{{this.id}}}">Sửa</a></span>
+<span><a href="/delete/{{{this.id}}}">Xóa</a></span>
+</br>
+{{/each}}
+
+<form id="myForm" method="post" action="/add">
+  <input name="title" type="text"></input>
+  <input name="description" type="text"></input>
+  <input name="content" type="text"></input>
+  <input type="submit"></input>
+</form>
